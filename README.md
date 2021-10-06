@@ -40,4 +40,7 @@ php artisan migrate
 php artisan serve
 ```
 
-Now test the API in a REST Client
+Run the tests using PHPUnit:
+```
+./vendor/bin/phpunit
+```
