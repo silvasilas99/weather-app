@@ -28,7 +28,7 @@ class WeatherCheck extends Controller
             # Realizando request e salvando resposta em formato json
             $response = Http::get($openWeatherUrl)->json();
             # Salvando item no cache
-            Cache::put($formatedCityParam, $response, now()->addMinutes(1));
+            Cache::put($formatedCityParam, $response, now()->addMinutes(20));
             # Retornando resposta para o cliente
             return response($response, 200);
         }
