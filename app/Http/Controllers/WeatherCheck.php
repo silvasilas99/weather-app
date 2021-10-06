@@ -13,17 +13,24 @@ class WeatherCheck extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($request)
+    public function index(Request $request, $city)
     {
+        # Formatando param de cidade
+        $formatedCityParam = sprintf("weather-in-%s", mb_strtolower($city,'UTF-8'));
         # Checando se o cache existe
-        if (Cache::has('weather')) {
-            # Retornando item do cache
-            $weather = Cache::get('weather');
-            return response($weather, 200);
+        if (Cache::has($formatedCityParam)) {
+            # Pegando e retornando item do cache, se ele existir
+            $city = Cache::get($formatedCityParam);
+            return response($city, 200);
         } else {
+            # Gerando URL com a cidade do params e chave do .env
+            $openWeatherUrl = sprintf("http://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s", $city, env('OPEN_WEATHER_APP_KEY'));
+            # Realizando request e salvando resposta em formato json
+            $response = Http::get($openWeatherUrl)->json();
             # Salvando item no cache
-            $weather = Cache::put('weather', 'testing', now()->addMinutes(20));
-            return response($weather, 200);
+            Cache::put($formatedCityParam, $response, now()->addMinutes(1));
+            # Retornando resposta para o cliente
+            return response($response, 200);
         }
     }
 }
